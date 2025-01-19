@@ -1,18 +1,17 @@
 <template>
     <div class="flex flex-col h-full">
-        <div class="p-4 bg-slate-50">
+        <!-- <div class="p-4 bg-slate-50">
             <button @click="reset" class="bg-slate-400 px-4 py-2 rounded text-white">
                 Сбросить счет
             </button>
-        </div>
+        </div> -->
         <div class="flex flex-col sm:flex-row flex-grow">
             <div class="flex-1 flex flex-col">
                 <div class="text-center p-2 bg-emerald-200">Первый игрок</div>
                 <button
-                    @click="incrementScore(1)"
+                    @click="handlePlayerClick(1)"
                     class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300"
                     :class="activePlayer === 1 ? 'bg-emerald-300' : 'bg-emerald-100'"
-                    :disabled="gameOver"
                 >
                     {{ firstPlayerScore }}
                 </button>
@@ -20,10 +19,9 @@
             <div class="flex-1 flex flex-col">
                 <div class="text-center p-2 bg-sky-200">Второй игрок</div>
                 <button
-                    @click="incrementScore(2)"
+                    @click="handlePlayerClick(2)"
                     class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300"
                     :class="activePlayer === 2 ? 'bg-sky-300' : 'bg-sky-100'"
-                    :disabled="gameOver"
                 >
                     {{ secondPlayerScore }}
                 </button>
@@ -33,7 +31,8 @@
             Подает: {{ activePlayer === 1 ? 'Первый' : 'Второй' }} игрок
         </div>
         <div v-if="gameOver" class="text-center p-4 bg-yellow-200 text-xl font-bold">
-            Игра окончена! Победил {{ winner === 1 ? 'Первый' : 'Второй' }} игрок!
+            Игра окончена! Победил {{ winner === 1 ? 'Первый' : 'Второй' }} игрок! Нажмите на кнопку
+            игрока, чтобы начать новую игру.
         </div>
     </div>
 </template>
@@ -49,6 +48,7 @@ const gameOver = ref(false)
 const winner = ref(null)
 
 const totalScore = computed(() => firstPlayerScore.value + secondPlayerScore.value)
+const isDeuce = computed(() => firstPlayerScore.value >= 10 && secondPlayerScore.value >= 10)
 
 function reset() {
     firstPlayerScore.value = 0
@@ -59,9 +59,17 @@ function reset() {
     winner.value = null
 }
 
-function incrementScore(player) {
-    if (gameOver.value) return
+function handlePlayerClick(player) {
+    if (gameOver.value) {
+        reset()
+        gameStarted.value = true
+        activePlayer.value = player
+    } else {
+        incrementScore(player)
+    }
+}
 
+function incrementScore(player) {
     if (!gameStarted.value) {
         gameStarted.value = true
         activePlayer.value = player
@@ -72,12 +80,28 @@ function incrementScore(player) {
             secondPlayerScore.value++
         }
 
+        checkGameEnd()
+
+        if (!gameOver.value) {
+            if (isDeuce.value) {
+                activePlayer.value = activePlayer.value === 1 ? 2 : 1
+            } else if (totalScore.value % 2 === 0) {
+                activePlayer.value = activePlayer.value === 1 ? 2 : 1
+            }
+        }
+    }
+}
+
+function checkGameEnd() {
+    if (isDeuce.value) {
+        if (Math.abs(firstPlayerScore.value - secondPlayerScore.value) === 2) {
+            endGame(firstPlayerScore.value > secondPlayerScore.value ? 1 : 2)
+        }
+    } else {
         if (firstPlayerScore.value >= 11) {
             endGame(1)
         } else if (secondPlayerScore.value >= 11) {
             endGame(2)
-        } else if (totalScore.value % 2 === 0) {
-            activePlayer.value = activePlayer.value === 1 ? 2 : 1
         }
     }
 }
