@@ -12,6 +12,7 @@
                     @click="incrementScore(1)"
                     class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300"
                     :class="activePlayer === 1 ? 'bg-emerald-300' : 'bg-emerald-100'"
+                    :disabled="gameOver"
                 >
                     {{ firstPlayerScore }}
                 </button>
@@ -22,13 +23,17 @@
                     @click="incrementScore(2)"
                     class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300"
                     :class="activePlayer === 2 ? 'bg-sky-300' : 'bg-sky-100'"
+                    :disabled="gameOver"
                 >
                     {{ secondPlayerScore }}
                 </button>
             </div>
         </div>
-        <div v-if="gameStarted" class="text-center p-4 bg-slate-200 text-xl">
+        <div v-if="gameStarted && !gameOver" class="text-center p-4 bg-slate-200 text-xl">
             Подает: {{ activePlayer === 1 ? 'Первый' : 'Второй' }} игрок
+        </div>
+        <div v-if="gameOver" class="text-center p-4 bg-yellow-200 text-xl font-bold">
+            Игра окончена! Победил {{ winner === 1 ? 'Первый' : 'Второй' }} игрок!
         </div>
     </div>
 </template>
@@ -40,6 +45,8 @@ const firstPlayerScore = ref(0)
 const secondPlayerScore = ref(0)
 const activePlayer = ref(null)
 const gameStarted = ref(false)
+const gameOver = ref(false)
+const winner = ref(null)
 
 const totalScore = computed(() => firstPlayerScore.value + secondPlayerScore.value)
 
@@ -48,9 +55,13 @@ function reset() {
     secondPlayerScore.value = 0
     activePlayer.value = null
     gameStarted.value = false
+    gameOver.value = false
+    winner.value = null
 }
 
 function incrementScore(player) {
+    if (gameOver.value) return
+
     if (!gameStarted.value) {
         gameStarted.value = true
         activePlayer.value = player
@@ -61,9 +72,18 @@ function incrementScore(player) {
             secondPlayerScore.value++
         }
 
-        if (totalScore.value % 2 === 0) {
+        if (firstPlayerScore.value >= 11) {
+            endGame(1)
+        } else if (secondPlayerScore.value >= 11) {
+            endGame(2)
+        } else if (totalScore.value % 2 === 0) {
             activePlayer.value = activePlayer.value === 1 ? 2 : 1
         }
     }
+}
+
+function endGame(winningPlayer) {
+    gameOver.value = true
+    winner.value = winningPlayer
 }
 </script>
