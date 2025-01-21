@@ -1,6 +1,6 @@
 <template>
     <div class="app-container safe-area-inset">
-        <RouterView />
+        <CounterView />
     </div>
 </template>
 
@@ -32,7 +32,7 @@ body {
 
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
-
+import CounterView from './components/CounterView.vue'
 const setViewportHeight = () => {
     let vh = window.innerHeight * 0.01
     document.documentElement.style.setProperty('--vh', `${vh}px`)
