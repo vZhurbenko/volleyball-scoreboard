@@ -1,27 +1,34 @@
 <template>
     <div class="flex flex-col h-full">
-        <!-- <div class="p-4 bg-slate-50">
-            <button @click="reset" class="bg-slate-400 px-4 py-2 rounded text-white">
+        <div class="px-4 pt-4">
+            <button
+                @click="reset"
+                class="rounded font-bold uppercase text-sm p-2 bg-transparent focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[1px] ease-linear transition-all duration-150 text-red-500 active:text-red-600 focus-visible:outline-red-500/50 border-2 border-red-500"
+            >
                 Сбросить счет
             </button>
-        </div> -->
-        <div class="flex flex-col sm:flex-row flex-grow">
-            <div class="flex-1 flex flex-col">
-                <div class="text-center p-2 bg-emerald-200">Первый игрок</div>
+        </div>
+        <div class="flex flex-col sm:flex-row flex-grow p-4 gap-4">
+            <div class="flex-1 flex flex-col shadow-md rounded overflow-hidden">
+                <div
+                    class="text-center p-2 min-h-10"
+                    :class="activePlayer === 1 ? 'bg-emerald-500' : 'bg-slate-200'"
+                ></div>
                 <button
                     @click="handlePlayerClick(1)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300"
-                    :class="activePlayer === 1 ? 'bg-emerald-300' : 'bg-emerald-100'"
+                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300 bg-slate-200"
                 >
                     {{ firstPlayerScore }}
                 </button>
             </div>
-            <div class="flex-1 flex flex-col">
-                <div class="text-center p-2 bg-sky-200">Второй игрок</div>
+            <div class="flex-1 flex flex-col shadow-md rounded overflow-hidden">
+                <div
+                    class="text-center p-2 min-h-10"
+                    :class="activePlayer === 2 ? 'bg-red-500' : 'bg-slate-200'"
+                ></div>
                 <button
                     @click="handlePlayerClick(2)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300"
-                    :class="activePlayer === 2 ? 'bg-sky-300' : 'bg-sky-100'"
+                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300 bg-slate-200"
                 >
                     {{ secondPlayerScore }}
                 </button>
