@@ -28,7 +28,9 @@
                 </button>
             </div>
         </div>
-        <div class="flex items-center justify-between p-4 bg-slate-200">
+        <div
+            class="flex items-center justify-between p-4 bg-slate-200 rounded-t overflow-hidden shadow-md"
+        >
             <div class="text-center font-bold uppercase text-sm">{{ statusText }}</div>
             <div>
                 <button
