@@ -24,19 +24,19 @@ jobs:
         run: npm run build
 
       - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.5.0
+        uses: shimataro/ssh-key-action@v2
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Check SSH connection
         run: ssh -v github-action@vzhurbenko.dev 'echo "SSH connection successful"'
 
-      - name: Add SSH Known Hosts
+      - name: Adding Known Hosts
         run: ssh-keyscan -H vzhurbenko.dev >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
-        run: |
-          rsync -avz --delete ./dist/ github-action@vzhurbenko.dev:/var/www/ttscore.vzhurbenko.dev/
+        run: rsync -avz --delete ./dist/ github-action@vzhurbenko.dev:/var/www/ttscore.vzhurbenko.dev/
 
       - name: Verify deployment
         run: ssh github-action@vzhurbenko.dev 'ls -la /var/www/ttscore.vzhurbenko.dev/'
