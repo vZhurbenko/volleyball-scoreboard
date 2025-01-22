@@ -10,7 +10,7 @@
                 ></div>
                 <button
                     @click="handlePlayerClick(1)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200"
+                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200 touch-manipulation"
                     :aria-label="`Первый игрок: ${firstPlayerScore}`"
                     :class="activePlayer === 1 ? 'text-emerald-500' : 'text-black'"
                 >
@@ -26,7 +26,7 @@
                 ></div>
                 <button
                     @click="handlePlayerClick(2)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200"
+                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200 touch-manipulation"
                     :aria-label="`Второй игрок: ${secondPlayerScore}`"
                     :class="activePlayer === 2 ? 'text-emerald-500' : 'text-black'"
                 >
