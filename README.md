@@ -1,4 +1,4 @@
-# Simple table tenis scoreboard
+# Simple table tennis scoreboard
 
 ## Project Setup
 
