@@ -22,13 +22,13 @@
             >
                 <div
                     class="text-center min-h-10"
-                    :class="activePlayer === 2 ? 'bg-red-500' : 'bg-slate-200'"
+                    :class="activePlayer === 2 ? 'bg-emerald-500' : 'bg-slate-200'"
                 ></div>
                 <button
                     @click="handlePlayerClick(2)"
                     class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200"
                     :aria-label="`Второй игрок: ${secondPlayerScore}`"
-                    :class="activePlayer === 2 ? 'text-red-500' : 'text-black'"
+                    :class="activePlayer === 2 ? 'text-emerald-500' : 'text-black'"
                 >
                     {{ secondPlayerScore }}
                 </button>
