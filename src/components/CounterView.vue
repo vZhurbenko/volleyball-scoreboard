@@ -1,28 +1,34 @@
 <template>
     <div class="flex flex-col h-full px-4">
         <div class="flex flex-col sm:flex-row flex-grow py-4 gap-4">
-            <div class="flex-1 flex flex-col shadow-md rounded overflow-hidden">
+            <div
+                class="flex-1 flex flex-col shadow-md rounded overflow-hidden transition-colors duration-100"
+            >
                 <div
                     class="text-center min-h-10"
                     :class="activePlayer === 1 ? 'bg-emerald-500' : 'bg-slate-200'"
                 ></div>
                 <button
                     @click="handlePlayerClick(1)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300 bg-slate-200"
+                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200"
                     :aria-label="`Первый игрок: ${firstPlayerScore}`"
+                    :class="activePlayer === 1 ? 'text-emerald-500' : 'text-black'"
                 >
                     {{ firstPlayerScore }}
                 </button>
             </div>
-            <div class="flex-1 flex flex-col shadow-md rounded overflow-hidden">
+            <div
+                class="flex-1 flex flex-col shadow-md rounded overflow-hidden transition-colors duration-100"
+            >
                 <div
                     class="text-center min-h-10"
                     :class="activePlayer === 2 ? 'bg-red-500' : 'bg-slate-200'"
                 ></div>
                 <button
                     @click="handlePlayerClick(2)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-300 bg-slate-200"
+                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200"
                     :aria-label="`Второй игрок: ${secondPlayerScore}`"
+                    :class="activePlayer === 2 ? 'text-red-500' : 'text-black'"
                 >
                     {{ secondPlayerScore }}
                 </button>
@@ -85,11 +91,15 @@ function reset() {
 function handlePlayerClick(player) {
     if (gameOver.value) {
         reset()
+        return
     }
+
     if (!gameStarted.value) {
         gameStarted.value = true
         activePlayer.value = player
+        return
     }
+
     incrementScore(player)
 }
 
