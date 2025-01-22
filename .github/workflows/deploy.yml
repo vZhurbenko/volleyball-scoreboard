@@ -2,7 +2,7 @@ name: Build and Deploy Vue App
 
 on:
   push:
-    branches: [ main ]  # Замените на вашу основную ветку, если она называется иначе
+    branches: [ master ]  # Замените на вашу основную ветку, если она называется иначе
 
 jobs:
   build-and-deploy:
