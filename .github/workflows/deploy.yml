@@ -31,6 +31,9 @@ jobs:
       - name: Check SSH connection
         run: ssh -v github-action@vzhurbenko.dev 'echo "SSH connection successful"'
 
+      - name: Add SSH Known Hosts
+        run: ssh-keyscan -H vzhurbenko.dev >> ~/.ssh/known_hosts
+
       - name: Deploy with rsync
         run: |
           rsync -avz --delete ./dist/ github-action@vzhurbenko.dev:/var/www/ttscore.vzhurbenko.dev/
