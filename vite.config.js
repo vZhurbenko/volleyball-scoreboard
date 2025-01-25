@@ -17,8 +17,8 @@ export default defineConfig({
             },
             includeAssets: ['**/*'],
             manifest: {
-                name: 'Пинг-понг счетчик',
-                short_name: 'Пинг-понг',
+                name: 'Табло для пинг-понга',
+                short_name: 'Табло',
                 description: 'Приложение для подсчета очков в пинг-понге',
                 theme_color: '#f1f5f9',
                 background_color: '#f1f5f9',
