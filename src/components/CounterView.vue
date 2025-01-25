@@ -56,7 +56,15 @@
             </div>
         </div>
         <!-- Табло -->
-        <div v-else-if="step === 2" class="flex flex-col sm:flex-row flex-grow p-4 gap-4 w-full">
+        <div
+            v-else-if="step === 2"
+            class="flex flex-col sm:flex-row flex-grow p-4 gap-4 w-full"
+            :class="
+                !playerOrder
+                    ? ['flex-col', 'sm:flex-row']
+                    : ['flex-col-reverse', 'sm:flex-row-reverse']
+            "
+        >
             <div
                 class="flex-1 flex flex-col shadow rounded overflow-hidden transition-colors duration-100"
             >
@@ -137,6 +145,7 @@ const gameOver = ref(false)
 const winner = ref(null)
 const firstPlayerName = defineModel('firstPlayerName', { default: 'Первый игрок' })
 const secondPlayerName = defineModel('secondPlayerName', { default: 'Второй игрок' })
+const playerOrder = ref(false)
 
 const totalScore = computed(() => firstPlayerScore.value + secondPlayerScore.value)
 const isDeuce = computed(
