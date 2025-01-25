@@ -28,20 +28,35 @@ export default defineConfig({
                 start_url: '/',
                 icons: [
                     {
-                        src: 'icon-192x192.png',
+                        src: 'img/icons/pwa-192x192.png',
                         sizes: '192x192',
                         type: 'image/png',
                     },
                     {
-                        src: 'icon-512x512.png',
+                        src: 'img/icons/pwa-512x512.png',
                         sizes: '512x512',
                         type: 'image/png',
                     },
                     {
-                        src: 'icon-512x512.png',
+                        src: 'img/icons/maskable-icon-512x512.png',
                         sizes: '512x512',
                         type: 'image/png',
-                        purpose: 'any maskable',
+                        purpose: 'maskable',
+                    },
+                    {
+                        src: 'img/icons/pwa-64x64.png',
+                        sizes: '64x64',
+                        type: 'image/png',
+                    },
+                    {
+                        src: 'img/icons/apple-touch-icon-180x180.png',
+                        sizes: '180x180',
+                        type: 'image/png',
+                    },
+                    {
+                        src: 'img/icons/logo.png',
+                        sizes: 'any',
+                        type: 'image/png',
                     },
                 ],
             },
