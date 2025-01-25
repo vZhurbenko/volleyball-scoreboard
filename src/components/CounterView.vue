@@ -1,50 +1,122 @@
 <template>
-    <div class="flex flex-col h-full px-4">
-        <div class="flex flex-col sm:flex-row flex-grow py-4 gap-4">
+    <div class="flex flex-col h-full">
+        <!-- Ввод имени -->
+        <div v-if="step === 0" class="flex-grow flex items-center justify-center p-2">
+            <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
+                <div class="flex-grow p-4 flex flex-col gap-2">
+                    <h2 class="text-lg font-bold">Введите имена игроков</h2>
+                    <div class="flex flex-col gap-3 w-full">
+                        <input
+                            v-model="firstPlayerName"
+                            type="text"
+                            placeholder="Первый игрок"
+                            class="p-2 rounded w-full shadow text-lg"
+                        />
+                        <input
+                            v-model="secondPlayerName"
+                            type="text"
+                            placeholder="Второй игрок"
+                            class="p-2 rounded w-full shadow text-lg"
+                        />
+                    </div>
+                </div>
+                <div class="px-4">
+                    <button
+                        @click="nextStep"
+                        class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg"
+                    >
+                        Далее
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Выбор первого подающего игрока -->
+        <div v-if="step === 1" class="flex-grow flex items-center justify-center p-2">
+            <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
+                <div class="flex-grow p-4 flex flex-col gap-2">
+                    <button class="font-bold underline flex items-center w-fit" @click="prevStep">
+                        <img src="../assets/img/backArrow.png" class="h-[20px]" />Назад
+                    </button>
+                    <h2 class="text-lg font-bold">Выберите первого подающего игрока</h2>
+                    <div class="flex flex-col gap-3 w-full">
+                        <button
+                            @click="startGame(1)"
+                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg"
+                        >
+                            {{ firstPlayerName }}
+                        </button>
+                        <button
+                            @click="startGame(2)"
+                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg"
+                        >
+                            {{ secondPlayerName }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Табло -->
+        <div v-else-if="step === 2" class="flex flex-col sm:flex-row flex-grow p-4 gap-4 w-full">
             <div
-                class="flex-1 flex flex-col shadow-md rounded overflow-hidden transition-colors duration-100"
+                class="flex-1 flex flex-col shadow rounded overflow-hidden transition-colors duration-100"
             >
                 <div
-                    class="text-center min-h-10"
-                    :class="activePlayer === 1 ? 'bg-emerald-500' : 'bg-slate-200'"
-                ></div>
+                    class="text-center min-h-10 flex items-center justify-center text-lg"
+                    :class="
+                        activePlayer === 1
+                            ? ['bg-blue-500', 'text-white']
+                            : ['bg-white', 'text-black']
+                    "
+                >
+                    {{ firstPlayerName }}
+                </div>
                 <button
                     @click="handlePlayerClick(1)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200 touch-manipulation"
+                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-white touch-manipulation"
                     :aria-label="`Первый игрок: ${firstPlayerScore}`"
-                    :class="activePlayer === 1 ? 'text-emerald-500' : 'text-black'"
+                    :class="activePlayer === 1 ? 'text-blue-500' : 'text-black'"
                 >
                     {{ firstPlayerScore }}
                 </button>
             </div>
             <div
-                class="flex-1 flex flex-col shadow-md rounded overflow-hidden transition-colors duration-100"
+                class="flex-1 flex flex-col shadow rounded overflow-hidden transition-colors duration-100"
             >
                 <div
-                    class="text-center min-h-10"
-                    :class="activePlayer === 2 ? 'bg-emerald-500' : 'bg-slate-200'"
-                ></div>
+                    class="text-center min-h-10 flex items-center justify-center text-lg"
+                    :class="
+                        activePlayer === 2
+                            ? ['bg-red-500', 'text-white']
+                            : ['bg-white', 'text-black']
+                    "
+                >
+                    {{ secondPlayerName }}
+                </div>
                 <button
                     @click="handlePlayerClick(2)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-slate-200 touch-manipulation"
+                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-white touch-manipulation"
                     :aria-label="`Второй игрок: ${secondPlayerScore}`"
-                    :class="activePlayer === 2 ? 'text-emerald-500' : 'text-black'"
+                    :class="activePlayer === 2 ? 'text-red-500' : 'text-black'"
                 >
                     {{ secondPlayerScore }}
                 </button>
             </div>
         </div>
-        <div
-            class="flex items-center justify-between p-4 bg-slate-200 rounded-t overflow-hidden shadow-md"
-        >
-            <div class="text-center font-bold uppercase text-sm">{{ statusText }}</div>
-            <div>
-                <button
-                    @click="reset"
-                    class="font-bold uppercase text-sm p-2 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[1px] ease-linear transition-all duration-150 text-red-500 active:text-red-600 focus-visible:outline-red-500/50"
-                >
-                    Сбросить счет
-                </button>
+        <div v-if="gameOver" class="flex-grow flex items-center justify-center p-2">
+            <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
+                <div class="flex-grow p-4 flex flex-col gap-2">
+                    <h2 class="text-lg font-bold">
+                        Победил: {{ winner === 1 ? firstPlayerName : secondPlayerName }}
+                    </h2>
+                    <div class="flex flex-col gap-3 w-full">
+                        <button
+                            @click="reset"
+                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg"
+                        >
+                            Начать заново
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -56,28 +128,20 @@ import { ref, computed } from 'vue'
 const WINNING_SCORE = 11
 const DEUCE_SCORE = 10
 const DEUCE_DIFFERENCE = 2
-
+const step = ref(0)
 const firstPlayerScore = ref(0)
 const secondPlayerScore = ref(0)
 const activePlayer = ref(null)
 const gameStarted = ref(false)
 const gameOver = ref(false)
 const winner = ref(null)
+const firstPlayerName = defineModel('firstPlayerName', { default: 'Первый игрок' })
+const secondPlayerName = defineModel('secondPlayerName', { default: 'Второй игрок' })
 
 const totalScore = computed(() => firstPlayerScore.value + secondPlayerScore.value)
 const isDeuce = computed(
     () => firstPlayerScore.value >= DEUCE_SCORE && secondPlayerScore.value >= DEUCE_SCORE,
 )
-
-const statusText = computed(() => {
-    if (!gameStarted.value) {
-        return 'Для начала игры выберите подающего игрока'
-    }
-    if (gameOver.value) {
-        return `Игра окончена! Победил ${winner.value === 1 ? 'Первый' : 'Второй'} игрок! Нажмите на кнопку игрока, чтобы начать новую игру.`
-    }
-    return `Подает: ${activePlayer.value === 1 ? 'Первый' : 'Второй'} игрок`
-})
 
 function reset() {
     firstPlayerScore.value = 0
@@ -86,20 +150,22 @@ function reset() {
     gameStarted.value = false
     gameOver.value = false
     winner.value = null
+    step.value = 0
+}
+function nextStep() {
+    step.value++
+}
+function prevStep() {
+    if (step.value > 0) {
+        step.value--
+    }
+}
+function startGame(player) {
+    step.value++
+    activePlayer.value = player
 }
 
 function handlePlayerClick(player) {
-    if (gameOver.value) {
-        reset()
-        return
-    }
-
-    if (!gameStarted.value) {
-        gameStarted.value = true
-        activePlayer.value = player
-        return
-    }
-
     incrementScore(player)
 }
 
@@ -109,9 +175,7 @@ function incrementScore(player) {
     } else {
         secondPlayerScore.value++
     }
-
     checkGameEnd()
-
     if (!gameOver.value) {
         if (isDeuce.value) {
             activePlayer.value = activePlayer.value === 1 ? 2 : 1
@@ -137,6 +201,8 @@ function checkGameEnd() {
 
 function endGame(winningPlayer) {
     gameOver.value = true
+    gameStarted.value = false
     winner.value = winningPlayer
+    step.value = 3
 }
 </script>
