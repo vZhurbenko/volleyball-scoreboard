@@ -23,19 +23,20 @@
                 <div class="px-4 flex gap-4 justify-between">
                     <button
                         @click="nextStep"
-                        class="bg-emerald-500 rounded shadow flex items-center justify-center p-2 text-white text-lg hover:bg-emerald-400 transition-colors w-3/12"
+                        class="bg-emerald-500 rounded shadow flex items-center justify-center p-2 text-white text-lg hover:bg-emerald-400 transition-colors w-4/12"
                     >
                         Далее
                     </button>
                     <button
                         @click="resetNames"
-                        class="flex items-center justify-center p-2 text-red-500 text-lg hover:text-red-400 transition-colors w-4/12"
+                        class="flex items-center justify-end p-2 text-red-500 text-lg hover:text-red-400 transition-colors w-6/12"
                     >
                         Сбросить имена
                     </button>
                 </div>
             </div>
         </div>
+
         <!-- Выбор первого подающего игрока -->
         <div v-if="step === 1" class="flex-grow flex items-center justify-center p-2">
             <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
@@ -80,6 +81,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Табло -->
         <div
             v-else-if="step === 2"
@@ -135,13 +137,63 @@
                 </div>
             </div>
         </div>
+
+        <!-- Экран статистики -->
         <div v-if="gameOver" class="flex-grow flex items-center justify-center p-2">
             <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
-                <div class="flex-grow p-4 flex flex-col gap-2">
-                    <h2 class="text-lg font-bold text-slate-700">
-                        Победил: {{ winner === 1 ? firstPlayerName : secondPlayerName }}
+                <div class="flex-grow p-4 flex flex-col">
+                    <h2
+                        class="text-lg text-slate-700 bg-white px-2 pt-2 font-bold rounded-t text-center"
+                    >
+                        <!-- :class="winner === 1 ? 'bg-blue-500' : 'bg-red-500'" -->
+                        Победил {{ winner === 1 ? firstPlayerName : secondPlayerName }} со счетом
+                        <span :class="winner === 1 ? 'text-blue-500' : 'text-red-500'">{{
+                            winner === 1 ? firstPlayerScore : secondPlayerScore
+                        }}</span>
+                        :
+                        <span :class="winner === 2 ? 'text-blue-500' : 'text-red-500'">{{
+                            winner === 2 ? firstPlayerScore : secondPlayerScore
+                        }}</span>
                     </h2>
-                    <div class="flex flex-col gap-3 w-full">
+
+                    <!-- Статистика игры -->
+                    <div class="bg-white p-2 rounded-b shadow">
+                        <h3 class="text-lg text-slate-700 w-full text-center">
+                            Статистика партии:
+                        </h3>
+                        <div class="flex text-slate-700">
+                            <!-- <div class="w-1/3 text-center py-1">№ Подачи</div> -->
+                            <div class="w-1/2 text-center py-1 text-lg">
+                                {{ firstPlayerName }}
+                            </div>
+                            <div class="w-1/2 text-center py-1 text-lg">
+                                {{ secondPlayerName }}
+                            </div>
+                        </div>
+                        <div class="overflow-y-auto max-h-96 divide-solid divide-y">
+                            <div v-for="(action, index) in gameHistory" :key="index" class="flex">
+                                <!-- <div
+                                    class="w-1/3 text-slate-700 py-2 flex justify-center items-center"
+                                >
+                                    {{ action.serveNumber }}
+                                </div> -->
+                                <div class="flex w-full divide-x divide-solid">
+                                    <div
+                                        class="w-1/2 text-center text-lg text-blue-500 flex justify-center items-center"
+                                    >
+                                        {{ action.player === 1 ? action.scoreAfter : '' }}
+                                    </div>
+                                    <div
+                                        class="w-1/2 text-center text-lg text-red-500 flex justify-center items-center"
+                                    >
+                                        {{ action.player === 2 ? action.scoreAfter : '' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3 w-full mt-4">
                         <button
                             @click="reset"
                             class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg hover:bg-emerald-400 transition-colors"
@@ -152,6 +204,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Кнопки управления -->
         <ControlButtons
             v-if="step === 2 && !gameOver"
@@ -180,6 +233,8 @@ const winner = ref(null)
 const firstPlayerName = defineModel('firstPlayerName', { default: '' })
 const secondPlayerName = defineModel('secondPlayerName', { default: '' })
 const playerOrder = ref(false)
+let serveNumber = ref(1)
+let pointsOnCurrentServe = ref(0)
 
 // История ходов теперь хранит только изменения
 const history = ref([])
@@ -188,6 +243,9 @@ const totalScore = computed(() => firstPlayerScore.value + secondPlayerScore.val
 const isDeuce = computed(
     () => firstPlayerScore.value >= DEUCE_SCORE && secondPlayerScore.value >= DEUCE_SCORE,
 )
+const gameHistory = computed(() => {
+    return history.value.filter((action) => action.action === 'score')
+})
 
 function reset() {
     firstPlayerScore.value = 0
@@ -199,6 +257,8 @@ function reset() {
     step.value = 0
     playerOrder.value = false
     history.value = []
+    serveNumber.value = 1
+    pointsOnCurrentServe.value = 0
 }
 
 function nextStep() {
@@ -214,6 +274,8 @@ function prevStep() {
 }
 
 function startGame(player) {
+    serveNumber.value = 1
+    pointsOnCurrentServe.value = 0
     step.value++
     activePlayer.value = player
     gameStarted.value = true
@@ -233,15 +295,7 @@ function incrementScore(player) {
         secondPlayerScore.value++
     }
 
-    checkGameEnd()
-
-    if (!gameOver.value) {
-        if (isDeuce.value) {
-            activePlayer.value = activePlayer.value === 1 ? 2 : 1
-        } else if (totalScore.value % 2 === 0) {
-            activePlayer.value = activePlayer.value === 1 ? 2 : 1
-        }
-    }
+    const scoreAfter = player === 1 ? firstPlayerScore.value : secondPlayerScore.value
 
     // Сохраняем ход в историю
     history.value.push({
@@ -249,7 +303,21 @@ function incrementScore(player) {
         player,
         prevActivePlayer,
         newActivePlayer: activePlayer.value,
+        serveNumber: serveNumber.value,
+        scoreAfter,
     })
+
+    checkGameEnd()
+
+    if (!gameOver.value) {
+        // Увеличиваем номер подачи после каждого очка
+        serveNumber.value++
+
+        // Меняем активного игрока каждые два очка
+        if (totalScore.value % 2 === 0) {
+            activePlayer.value = activePlayer.value === 1 ? 2 : 1
+        }
+    }
 }
 
 function checkGameEnd() {
