@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-full relative">
         <!-- Ввод имени -->
         <div v-if="step === 0" class="flex-grow flex items-center justify-center p-2">
             <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
@@ -68,46 +68,46 @@
             <div
                 class="flex-1 flex flex-col shadow rounded overflow-hidden transition-colors duration-100"
             >
+                <button
+                    @click="handlePlayerClick(1)"
+                    class="flex-1 font-bold text-[35cqmin] flex items-center justify-center w-full transition-colors duration-100 bg-white touch-manipulation"
+                    :aria-label="`Первый игрок: ${firstPlayerScore}`"
+                    :class="activePlayer === 1 ? 'text-blue-500' : 'text-slate-700'"
+                >
+                    {{ firstPlayerScore }}
+                </button>
                 <div
                     class="text-center min-h-10 flex items-center justify-center text-lg"
                     :class="
                         activePlayer === 1
                             ? ['bg-blue-500', 'text-white']
-                            : ['bg-white', 'text-black']
+                            : ['bg-white', 'text-slate-700']
                     "
                 >
                     {{ firstPlayerName }}
                 </div>
-                <button
-                    @click="handlePlayerClick(1)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-white touch-manipulation"
-                    :aria-label="`Первый игрок: ${firstPlayerScore}`"
-                    :class="activePlayer === 1 ? 'text-blue-500' : 'text-black'"
-                >
-                    {{ firstPlayerScore }}
-                </button>
             </div>
             <div
                 class="flex-1 flex flex-col shadow rounded overflow-hidden transition-colors duration-100"
             >
+                <button
+                    @click="handlePlayerClick(2)"
+                    class="flex-1 font-bold text-[35cqmin] flex items-center justify-center w-full transition-colors duration-100 bg-white touch-manipulation"
+                    :aria-label="`Второй игрок: ${secondPlayerScore}`"
+                    :class="activePlayer === 2 ? 'text-red-500' : 'text-slate-700'"
+                >
+                    {{ secondPlayerScore }}
+                </button>
                 <div
                     class="text-center min-h-10 flex items-center justify-center text-lg"
                     :class="
                         activePlayer === 2
                             ? ['bg-red-500', 'text-white']
-                            : ['bg-white', 'text-black']
+                            : ['bg-white', 'text-slate-700']
                     "
                 >
                     {{ secondPlayerName }}
                 </div>
-                <button
-                    @click="handlePlayerClick(2)"
-                    class="flex-1 text-9xl flex items-center justify-center w-full transition-colors duration-100 bg-white touch-manipulation"
-                    :aria-label="`Второй игрок: ${secondPlayerScore}`"
-                    :class="activePlayer === 2 ? 'text-red-500' : 'text-black'"
-                >
-                    {{ secondPlayerScore }}
-                </button>
             </div>
         </div>
         <div v-if="gameOver" class="flex-grow flex items-center justify-center p-2">
@@ -127,11 +127,14 @@
                 </div>
             </div>
         </div>
+        <!-- Кнопки управления -->
+        <ControlButtons v-if="step === 2 && !gameOver" @changeSide="playerOrder = !playerOrder" />
     </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import ControlButtons from './ControlButtons.vue'
 
 const WINNING_SCORE = 11
 const DEUCE_SCORE = 10
@@ -160,6 +163,7 @@ function reset() {
     gameOver.value = false
     winner.value = null
     step.value = 0
+    playerOrder.value = false
 }
 function nextStep() {
     step.value++
