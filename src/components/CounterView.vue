@@ -4,28 +4,34 @@
         <div v-if="step === 0" class="flex-grow flex items-center justify-center p-2">
             <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
                 <div class="flex-grow p-4 flex flex-col gap-2">
-                    <h2 class="text-lg font-bold">Введите имена игроков</h2>
+                    <h2 class="text-lg font-bold text-slate-700">Введите имена игроков</h2>
                     <div class="flex flex-col gap-3 w-full">
                         <input
                             v-model="firstPlayerName"
                             type="text"
                             placeholder="Первый игрок"
-                            class="p-2 rounded w-full shadow text-lg"
+                            class="p-2 rounded w-full shadow text-lg text-slate-700"
                         />
                         <input
                             v-model="secondPlayerName"
                             type="text"
                             placeholder="Второй игрок"
-                            class="p-2 rounded w-full shadow text-lg"
+                            class="p-2 rounded w-full shadow text-lg text-slate-700"
                         />
                     </div>
                 </div>
-                <div class="px-4">
+                <div class="px-4 flex gap-4 justify-between">
                     <button
                         @click="nextStep"
-                        class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg"
+                        class="bg-emerald-500 rounded shadow flex items-center justify-center p-2 text-white text-lg hover:bg-emerald-400 transition-colors w-3/12"
                     >
                         Далее
+                    </button>
+                    <button
+                        @click="resetNames"
+                        class="flex items-center justify-center p-2 text-red-500 text-lg hover:text-red-400 transition-colors w-4/12"
+                    >
+                        Сбросить имена
                     </button>
                 </div>
             </div>
@@ -34,20 +40,39 @@
         <div v-if="step === 1" class="flex-grow flex items-center justify-center p-2">
             <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
                 <div class="flex-grow p-4 flex flex-col gap-2">
-                    <button class="font-bold underline flex items-center w-fit" @click="prevStep">
-                        <img src="../assets/img/backArrow.png" class="h-[20px]" />Назад
+                    <button
+                        class="font-bold underline flex items-center w-fit text-slate-700 hover:text-slate-500 transition-colors"
+                        @click="prevStep"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <!-- <path d="M19 12H5" /> -->
+                            <polyline points="12 19 5 12 12 5" />
+                        </svg>
+                        К вводу имен
                     </button>
-                    <h2 class="text-lg font-bold">Выберите первого подающего игрока</h2>
+                    <h2 class="text-lg font-bold text-slate-700">
+                        Выберите первого подающего игрока
+                    </h2>
                     <div class="flex flex-col gap-3 w-full">
                         <button
                             @click="startGame(1)"
-                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg"
+                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg hover:bg-emerald-400 transition-colors"
                         >
                             {{ firstPlayerName }}
                         </button>
                         <button
                             @click="startGame(2)"
-                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg"
+                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg hover:bg-emerald-400 transition-colors"
                         >
                             {{ secondPlayerName }}
                         </button>
@@ -113,13 +138,13 @@
         <div v-if="gameOver" class="flex-grow flex items-center justify-center p-2">
             <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
                 <div class="flex-grow p-4 flex flex-col gap-2">
-                    <h2 class="text-lg font-bold">
+                    <h2 class="text-lg font-bold text-slate-700">
                         Победил: {{ winner === 1 ? firstPlayerName : secondPlayerName }}
                     </h2>
                     <div class="flex flex-col gap-3 w-full">
                         <button
                             @click="reset"
-                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg"
+                            class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg hover:bg-emerald-400 transition-colors"
                         >
                             Начать заново
                         </button>
@@ -128,7 +153,12 @@
             </div>
         </div>
         <!-- Кнопки управления -->
-        <ControlButtons v-if="step === 2 && !gameOver" @changeSide="playerOrder = !playerOrder" />
+        <ControlButtons
+            v-if="step === 2 && !gameOver"
+            @changeSide="playerOrder = !playerOrder"
+            @cancelTurn="cancelTurn"
+            @resetGame="reset"
+        />
     </div>
 </template>
 
@@ -146,9 +176,11 @@ const activePlayer = ref(null)
 const gameStarted = ref(false)
 const gameOver = ref(false)
 const winner = ref(null)
-const firstPlayerName = defineModel('firstPlayerName', { default: 'Первый игрок' })
-const secondPlayerName = defineModel('secondPlayerName', { default: 'Второй игрок' })
+const firstPlayerName = defineModel('firstPlayerName', { default: '' })
+const secondPlayerName = defineModel('secondPlayerName', { default: '' })
 const playerOrder = ref(false)
+const lastActivePlayer = ref(1)
+const lastInceremtedScore = ref(0)
 
 const totalScore = computed(() => firstPlayerScore.value + secondPlayerScore.value)
 const isDeuce = computed(
@@ -167,6 +199,8 @@ function reset() {
 }
 function nextStep() {
     step.value++
+    firstPlayerName.value === '' ? (firstPlayerName.value = 'Первый игрок') : 1
+    secondPlayerName.value === '' ? (secondPlayerName.value = 'Второй игрок') : 1
 }
 function prevStep() {
     if (step.value > 0) {
@@ -176,9 +210,12 @@ function prevStep() {
 function startGame(player) {
     step.value++
     activePlayer.value = player
+    lastActivePlayer.value = player
 }
 
 function handlePlayerClick(player) {
+    lastInceremtedScore.value = player
+    lastActivePlayer.value = activePlayer.value
     incrementScore(player)
 }
 
@@ -217,5 +254,22 @@ function endGame(winningPlayer) {
     gameStarted.value = false
     winner.value = winningPlayer
     step.value = 3
+}
+
+function cancelTurn() {
+    if (lastInceremtedScore.value === 1 && firstPlayerScore.value > 0) {
+        firstPlayerScore.value--
+        activePlayer.value = lastActivePlayer.value
+    }
+
+    if (lastInceremtedScore.value === 2 && secondPlayerScore.value > 0) {
+        secondPlayerScore.value--
+        activePlayer.value = lastActivePlayer.value
+    }
+}
+
+function resetNames() {
+    firstPlayerName.value = ''
+    secondPlayerName.value = ''
 }
 </script>

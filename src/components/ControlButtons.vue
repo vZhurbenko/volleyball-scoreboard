@@ -1,11 +1,14 @@
 <script setup>
 import { defineEmits } from 'vue'
-const emit = defineEmits(['changeSide', 'cancelTurn'])
+const emit = defineEmits(['changeSide', 'cancelTurn', 'resetGame'])
 function changeSide() {
     emit('changeSide')
 }
 function cancelTurn() {
     emit('cancelTurn')
+}
+function resetGame() {
+    emit('resetGame')
 }
 </script>
 
@@ -13,7 +16,7 @@ function cancelTurn() {
     <div
         class="fixed sm:top-0 top-[env(safe-area-inset-top)] left-1/2 transform -translate-x-1/2 bg-slate-100 shadow rounded overflow-hidden"
     >
-        <button class="px-4 py-2 touch-manipulation text-slate-700">
+        <button class="px-4 py-2 touch-manipulation text-slate-700" @click="cancelTurn">
             <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"
@@ -33,13 +36,13 @@ function cancelTurn() {
             </svg>
         </button>
 
-        <!-- <button class="px-4 py-2 touch-manipulation">
+        <button class="px-4 py-2 touch-manipulation text-slate-700" @click="resetGame">
             <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
-                    d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+                    d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
                     fill="currentColor"
                 />
             </svg>
-        </button> -->
+        </button>
     </div>
 </template>
