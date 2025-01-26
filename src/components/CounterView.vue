@@ -169,6 +169,7 @@ import ControlButtons from './ControlButtons.vue'
 const WINNING_SCORE = 11
 const DEUCE_SCORE = 10
 const DEUCE_DIFFERENCE = 2
+
 const step = ref(0)
 const firstPlayerScore = ref(0)
 const secondPlayerScore = ref(0)
@@ -179,8 +180,9 @@ const winner = ref(null)
 const firstPlayerName = defineModel('firstPlayerName', { default: '' })
 const secondPlayerName = defineModel('secondPlayerName', { default: '' })
 const playerOrder = ref(false)
-const lastActivePlayer = ref(1)
-const lastInceremtedScore = ref(0)
+
+// История ходов теперь хранит только изменения
+const history = ref([])
 
 const totalScore = computed(() => firstPlayerScore.value + secondPlayerScore.value)
 const isDeuce = computed(
@@ -196,36 +198,43 @@ function reset() {
     winner.value = null
     step.value = 0
     playerOrder.value = false
+    history.value = []
 }
+
 function nextStep() {
     step.value++
-    firstPlayerName.value === '' ? (firstPlayerName.value = 'Первый игрок') : 1
-    secondPlayerName.value === '' ? (secondPlayerName.value = 'Второй игрок') : 1
+    firstPlayerName.value = firstPlayerName.value || 'Первый игрок'
+    secondPlayerName.value = secondPlayerName.value || 'Второй игрок'
 }
+
 function prevStep() {
     if (step.value > 0) {
         step.value--
     }
 }
+
 function startGame(player) {
     step.value++
     activePlayer.value = player
-    lastActivePlayer.value = player
+    gameStarted.value = true
+    history.value.push({ action: 'start', player })
 }
 
 function handlePlayerClick(player) {
-    lastInceremtedScore.value = player
-    lastActivePlayer.value = activePlayer.value
     incrementScore(player)
 }
 
 function incrementScore(player) {
+    const prevActivePlayer = activePlayer.value
+
     if (player === 1) {
         firstPlayerScore.value++
     } else {
         secondPlayerScore.value++
     }
+
     checkGameEnd()
+
     if (!gameOver.value) {
         if (isDeuce.value) {
             activePlayer.value = activePlayer.value === 1 ? 2 : 1
@@ -233,6 +242,14 @@ function incrementScore(player) {
             activePlayer.value = activePlayer.value === 1 ? 2 : 1
         }
     }
+
+    // Сохраняем ход в историю
+    history.value.push({
+        action: 'score',
+        player,
+        prevActivePlayer,
+        newActivePlayer: activePlayer.value,
+    })
 }
 
 function checkGameEnd() {
@@ -254,17 +271,28 @@ function endGame(winningPlayer) {
     gameStarted.value = false
     winner.value = winningPlayer
     step.value = 3
+    history.value.push({ action: 'end', winner: winningPlayer })
 }
 
 function cancelTurn() {
-    if (lastInceremtedScore.value === 1 && firstPlayerScore.value > 0) {
-        firstPlayerScore.value--
-        activePlayer.value = lastActivePlayer.value
-    }
+    if (history.value.length > 0) {
+        const lastAction = history.value.pop()
 
-    if (lastInceremtedScore.value === 2 && secondPlayerScore.value > 0) {
-        secondPlayerScore.value--
-        activePlayer.value = lastActivePlayer.value
+        if (lastAction.action === 'score') {
+            if (lastAction.player === 1) {
+                firstPlayerScore.value--
+            } else {
+                secondPlayerScore.value--
+            }
+            activePlayer.value = lastAction.prevActivePlayer
+        } else if (lastAction.action === 'end') {
+            gameOver.value = false
+            gameStarted.value = true
+            winner.value = null
+            step.value = 2
+        } else if (lastAction.action === 'start') {
+            reset()
+        }
     }
 }
 
