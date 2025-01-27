@@ -157,7 +157,7 @@
                     </h2>
 
                     <!-- Статистика игры -->
-                    <div class="bg-white p-2 rounded-b shadow">
+                    <div class="bg-white p-2 rounded-b">
                         <h3 class="text-lg text-slate-700 w-full text-center">
                             Статистика партии:
                         </h3>
