@@ -140,7 +140,7 @@
 
         <!-- Экран статистики -->
         <div v-if="gameOver" class="flex-grow flex items-center justify-center p-2">
-            <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
+            <div class="flex flex-col overflow-hidden w-full md:max-w-lg shadow">
                 <div class="flex-grow p-4 flex flex-col">
                     <h2
                         class="text-lg text-slate-700 bg-white px-2 pt-2 font-bold rounded-t text-center"
