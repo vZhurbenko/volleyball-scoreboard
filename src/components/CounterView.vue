@@ -140,28 +140,30 @@
 
         <!-- Экран статистики -->
         <div v-if="gameOver" class="flex-grow flex items-center justify-center p-2">
-            <div class="flex flex-col overflow-hidden w-full md:max-w-lg shadow">
-                <div class="flex-grow p-4 flex flex-col">
-                    <h2
-                        class="text-lg text-slate-700 bg-white px-2 pt-2 font-bold rounded-t text-center"
-                    >
-                        <!-- :class="winner === 1 ? 'bg-blue-500' : 'bg-red-500'" -->
-                        Победил {{ winner === 1 ? firstPlayerName : secondPlayerName }} со счетом
-                        <span :class="winner === 1 ? 'text-blue-500' : 'text-red-500'">{{
-                            winner === 1 ? firstPlayerScore : secondPlayerScore
-                        }}</span>
-                        :
-                        <span :class="winner === 2 ? 'text-blue-500' : 'text-red-500'">{{
-                            winner === 2 ? firstPlayerScore : secondPlayerScore
-                        }}</span>
-                    </h2>
-
+            <div class="flex flex-col w-full sm:max-w-lg">
+                <div class="flex-grow flex flex-col gap-4">
                     <!-- Статистика игры -->
-                    <div class="bg-white p-2 rounded-b">
+                    <div class="bg-white p-2 rounded overflow-hidden shadow">
+                        <h2 class="text-lg text-slate-700 px-2 pt-2 font-bold text-center">
+                            Победил {{ winner === 1 ? firstPlayerName : secondPlayerName }} со
+                            счетом
+                        </h2>
+                        <div class="text-lg text-slate-700 px-2 font-bold text-center">
+                            <span :class="winner === 1 ? 'text-blue-500' : 'text-red-500'">
+                                {{ winner === 1 ? firstPlayerScore : secondPlayerScore }}
+                            </span>
+                            :
+                            <span :class="winner === 2 ? 'text-blue-500' : 'text-red-500'">
+                                {{ winner === 2 ? firstPlayerScore : secondPlayerScore }}
+                            </span>
+                        </div>
                         <h3 class="text-lg text-slate-700 w-full text-center">
                             Статистика партии:
                         </h3>
-                        <div class="flex text-slate-700">
+                        <div
+                            class="flex text-slate-700"
+                            :class="winner === 1 ? 'flex-row' : 'flex-row-reverse'"
+                        >
                             <!-- <div class="w-1/3 text-center py-1">№ Подачи</div> -->
                             <div class="w-1/2 text-center py-1 text-lg">
                                 {{ firstPlayerName }}
@@ -170,14 +172,12 @@
                                 {{ secondPlayerName }}
                             </div>
                         </div>
-                        <div class="overflow-y-auto max-h-96 divide-solid divide-y">
+                        <div class="overflow-y-auto max-h-80 divide-solid divide-y">
                             <div v-for="(action, index) in gameHistory" :key="index" class="flex">
-                                <!-- <div
-                                    class="w-1/3 text-slate-700 py-2 flex justify-center items-center"
+                                <div
+                                    class="flex w-full divide-solid"
+                                    :class="winner === 1 ? 'flex-row' : 'flex-row-reverse'"
                                 >
-                                    {{ action.serveNumber }}
-                                </div> -->
-                                <div class="flex w-full divide-x divide-solid">
                                     <div
                                         class="w-1/2 text-center text-lg text-blue-500 flex justify-center items-center"
                                     >
@@ -193,7 +193,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col gap-3 w-full mt-4">
+                    <div class="flex flex-col gap-4 w-full">
                         <button
                             @click="reset"
                             class="bg-emerald-500 w-full rounded shadow flex items-center justify-center p-2 text-white text-lg hover:bg-emerald-400 transition-colors"
@@ -205,12 +205,12 @@
             </div>
         </div>
 
-        <!-- Кнопки управления -->
+        <!-- Кнопки управления табло-->
         <ControlButtons
             v-if="step === 2 && !gameOver"
             @changeSide="playerOrder = !playerOrder"
             @cancelTurn="cancelTurn"
-            @resetGame="reset"
+            @resetGame="resetCurrentSet"
         />
     </div>
 </template>
@@ -236,7 +236,6 @@ const playerOrder = ref(false)
 let serveNumber = ref(1)
 let pointsOnCurrentServe = ref(0)
 
-// История ходов теперь хранит только изменения
 const history = ref([])
 
 const totalScore = computed(() => firstPlayerScore.value + secondPlayerScore.value)
@@ -310,11 +309,10 @@ function incrementScore(player) {
     checkGameEnd()
 
     if (!gameOver.value) {
-        // Увеличиваем номер подачи после каждого очка
         serveNumber.value++
-
-        // Меняем активного игрока каждые два очка
-        if (totalScore.value % 2 === 0) {
+        if (isDeuce.value) {
+            activePlayer.value = activePlayer.value === 1 ? 2 : 1
+        } else if (totalScore.value % 2 === 0) {
             activePlayer.value = activePlayer.value === 1 ? 2 : 1
         }
     }
@@ -367,5 +365,16 @@ function cancelTurn() {
 function resetNames() {
     firstPlayerName.value = ''
     secondPlayerName.value = ''
+}
+function resetCurrentSet() {
+    if (history.value.length > 0) {
+        firstPlayerScore.value = 0
+        secondPlayerScore.value = 0
+        activePlayer.value = history.value[0].player
+        history.value = []
+        history.value.push({ action: 'start', player: activePlayer.value })
+        serveNumber.value = 1
+        pointsOnCurrentServe.value = 0
+    }
 }
 </script>
