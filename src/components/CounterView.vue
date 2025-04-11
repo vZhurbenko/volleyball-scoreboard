@@ -9,13 +9,13 @@
                         <input
                             v-model="firstPlayerName"
                             type="text"
-                            placeholder="Первый игрок"
+                            placeholder="Команда один"
                             class="p-2 rounded w-full shadow text-lg text-slate-700"
                         />
                         <input
                             v-model="secondPlayerName"
                             type="text"
-                            placeholder="Второй игрок"
+                            placeholder="Команда два"
                             class="p-2 rounded w-full shadow text-lg text-slate-700"
                         />
                     </div>
