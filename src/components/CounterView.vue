@@ -145,8 +145,11 @@
                     <!-- Статистика игры -->
                     <div class="bg-white p-2 rounded overflow-hidden shadow">
                         <h2 class="text-lg text-slate-700 px-2 pt-2 font-bold text-center">
-                            Победила {{ winner === 1 ? firstPlayerName : secondPlayerName }} со
-                            счетом
+                            Победила
+                            <span :class="winner === 1 ? 'text-blue-500' : 'text-red-500'">{{
+                                winner === 1 ? firstPlayerName : secondPlayerName
+                            }}</span>
+                            со счетом
                         </h2>
                         <div class="text-lg text-slate-700 px-2 font-bold text-center">
                             <span :class="winner === 1 ? 'text-blue-500' : 'text-red-500'">
@@ -219,8 +222,8 @@
 import { ref, computed } from 'vue'
 import ControlButtons from './ControlButtons.vue'
 
-const WINNING_SCORE = 11
-const DEUCE_SCORE = 10
+const WINNING_SCORE = 25
+const DEUCE_SCORE = 24
 const DEUCE_DIFFERENCE = 2
 
 const step = ref(0)
@@ -309,12 +312,11 @@ function incrementScore(player) {
     checkGameEnd()
 
     if (!gameOver.value) {
-        serveNumber.value++
-        if (isDeuce.value) {
-            activePlayer.value = activePlayer.value === 1 ? 2 : 1
-        } else if (totalScore.value % 2 === 0) {
-            activePlayer.value = activePlayer.value === 1 ? 2 : 1
+        // В волейболе подача переходит только если очко выиграла принимающая команда
+        if (player !== activePlayer.value) {
+            activePlayer.value = player // Передаем подачу команде, которая выиграла очко
         }
+        serveNumber.value++
     }
 }
 
