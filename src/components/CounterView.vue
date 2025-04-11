@@ -4,7 +4,7 @@
         <div v-if="step === 0" class="flex-grow flex items-center justify-center p-2">
             <div class="flex flex-col overflow-hidden w-full md:max-w-lg">
                 <div class="flex-grow p-4 flex flex-col gap-2">
-                    <h2 class="text-lg font-bold text-slate-700">Введите имена игроков</h2>
+                    <h2 class="text-lg font-bold text-slate-700">Введите название команд</h2>
                     <div class="flex flex-col gap-3 w-full">
                         <input
                             v-model="firstPlayerName"
@@ -31,7 +31,7 @@
                         @click="resetNames"
                         class="flex items-center justify-end p-2 text-red-500 text-lg hover:text-red-400 transition-colors w-6/12"
                     >
-                        Сбросить имена
+                        Сбросить названия
                     </button>
                 </div>
             </div>
@@ -59,10 +59,10 @@
                             <!-- <path d="M19 12H5" /> -->
                             <polyline points="12 19 5 12 12 5" />
                         </svg>
-                        К вводу имен
+                        К вводу названий команд
                     </button>
                     <h2 class="text-lg font-bold text-slate-700">
-                        Выберите первого подающего игрока
+                        Выберите первую подающую команду
                     </h2>
                     <div class="flex flex-col gap-3 w-full">
                         <button
@@ -145,7 +145,7 @@
                     <!-- Статистика игры -->
                     <div class="bg-white p-2 rounded overflow-hidden shadow">
                         <h2 class="text-lg text-slate-700 px-2 pt-2 font-bold text-center">
-                            Победил {{ winner === 1 ? firstPlayerName : secondPlayerName }} со
+                            Победила {{ winner === 1 ? firstPlayerName : secondPlayerName }} со
                             счетом
                         </h2>
                         <div class="text-lg text-slate-700 px-2 font-bold text-center">
@@ -262,8 +262,8 @@ function reset() {
 
 function nextStep() {
     step.value++
-    firstPlayerName.value = firstPlayerName.value || 'Первый игрок'
-    secondPlayerName.value = secondPlayerName.value || 'Второй игрок'
+    firstPlayerName.value = firstPlayerName.value || 'Команда один'
+    secondPlayerName.value = secondPlayerName.value || 'Команда два'
 }
 
 function prevStep() {

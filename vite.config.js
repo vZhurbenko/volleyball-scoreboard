@@ -17,9 +17,9 @@ export default defineConfig({
             },
             includeAssets: ['**/*'],
             manifest: {
-                name: 'Табло для пинг-понга',
-                short_name: 'Табло',
-                description: 'Приложение для подсчета очков в пинг-понге',
+                name: 'Табло для волейбола',
+                short_name: 'Табло волейбол',
+                description: 'Приложение для подсчета очков в волейболе',
                 theme_color: '#f1f5f9',
                 background_color: '#f1f5f9',
                 display: 'standalone',
