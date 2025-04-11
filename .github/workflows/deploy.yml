@@ -34,8 +34,8 @@ jobs:
         run: ssh-keyscan -H vzhurbenko.dev >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
-        run: rsync -avz --delete --no-times ./dist/ github-action@vzhurbenko.dev:/var/www/ttscore.vzhurbenko.dev/
+        run: rsync -avz --delete --no-times ./dist/ github-action@vzhurbenko.dev:/var/www/volleyscore.vzhurbenko.dev/
         continue-on-error: true
 
       - name: Verify deployment
-        run: ssh github-action@vzhurbenko.dev 'ls -la /var/www/ttscore.vzhurbenko.dev/'
+        run: ssh github-action@vzhurbenko.dev 'ls -la /var/www/volleyscore.vzhurbenko.dev/'
